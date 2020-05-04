@@ -25,7 +25,9 @@ type PeakProblem = struct
 
     override self.ToString() = sprintf "[%A,%A]" self.Array self.Bounds
 
-    member self.Get(location) = 
+    member self.NoPeak = (0,0)
+
+    member self.Get(location: Location) = 
 
         /// Return the value of the array at the given location, 
         /// offset by the coordinates (startRow, startCol)
@@ -35,7 +37,7 @@ type PeakProblem = struct
         elif not (0 <= c && c < self.NumCol) then 0
         else self.Array.[(self.StartRow + r),(self.StartCol + c)]
 
-    member self.GetBetterNeighbor(location: Location, trace: TraceRecord option) =
+    member self.GetBetterNeighbor(location: Location, trace: TraceRecord option) : Location =
 
         /// if (r,c) has a better neighbor, return the neighbor.
         /// Otherwise return the location (r,c)
@@ -74,7 +76,9 @@ type PeakProblem = struct
         /// constructs the subproblem using getSubproblem()
 
         let row,col = location
-        let mutable problem = PeakProblem(self.Array,self.Bounds)
+        
+        /// Create a template to return subproblem
+        let mutable problem = self
         
         for (sRow, sCol, nRow, nCol) in boundList do
             if sRow  <= row && row < sRow + nRow then 
@@ -83,20 +87,19 @@ type PeakProblem = struct
 
         problem
 
-    member self.GetLocationInSelf(problem: PeakProblem, location: Location option) =
+    member self.GetLocationInSelf(problem: PeakProblem, location: Location) : Location=
 
         /// Remaps the location in the given problem to the same location in 
         /// the problem that this function is being called from
 
-        match location with
-        | None -> None
-        | Some loc ->
-            let row, col = loc
-            let newRow = row + problem.StartRow - self.StartRow
-            let newCol = col + problem.StartCol - self.StartCol
-            Some (newRow, newCol)
+        
+        
+        let row, col = location
+        let newRow = row + problem.StartRow - self.StartRow
+        let newCol = col + problem.StartCol - self.StartCol
+        (newRow, newCol)
 
-    member self.IsPeak(location) =
+    member self.IsPeak(location) : bool =
 
         /// Return true if the given location is a peak in the current subproblem
         
