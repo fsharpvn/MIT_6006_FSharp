@@ -5,10 +5,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Problem1D.json" />
-    <Compile Include="JsonDeserializeExample.fs" />
     <Compile Include="JsonBasicConverter.fs" />
     <Compile Include="Trace.fs" />
     <Compile Include="Peak.fs" />
+    <Compile Include="JsonDeserializeExample.fs" />
     <Compile Include="Algorithm1D.fs" />
   </ItemGroup>
   <ItemGroup />

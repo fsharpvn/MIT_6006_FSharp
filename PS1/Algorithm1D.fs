@@ -1,5 +1,20 @@
 namespace Ps1
 
+open System
+open System.Text.Json
+open System.IO
+open System.Collections.Generic
+
+type node () = 
+    member val problemList = List<int>() with get, set
+
+module Helper = 
+    let loadProblem name = 
+        let file = File.ReadAllText(name)
+        let nodes = JsonSerializer.Deserialize<seq<node>>(file)
+        let a = Seq.item 0 nodes
+        a.problemList
+        
 module Array =
 
     let getDimensions array =
@@ -11,12 +26,12 @@ module Array =
         let rows,cols = getDimensions array
         PeakProblem(array, (0,0, rows, cols))
 
-    let convertFrom1D (list: int []) : int[,]  = 
-        let m2 = Array2D.zeroCreate list.Length 1 
+    let convertFrom1D (list: List<int>) : int[,]  = 
+        let m2 = Array2D.zeroCreate list.Count 1 
              
-        for i=0 to list.Length-1 do         
+        for i=0 to list.Count-1 do         
             m2.[i,0] <- list.[i]
-        m2        
+        m2               
 
 module Algorithm = 
 
@@ -80,8 +95,13 @@ module Main =
     
     [<EntryPoint>]
     let main argv =
-
-        let problemList = [|1; 2; 3; 4; 5; 6; 5; 4; 3|]
+        printfn "Input file name, if not default is Problem1D.json "
+        let fileName = Console.ReadLine()
+        let problemList = 
+            match fileName with 
+            | n when n.Length > 1 -> Helper.loadProblem(n)
+            | _ -> 
+                Helper.loadProblem(@"C:\Users\bobby\source\repos\MIT_6006_FSharp\PS1\Problem1D.json")
         let problem = 
             problemList
             |> Array.convertFrom1D 
